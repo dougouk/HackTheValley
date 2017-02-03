@@ -125,8 +125,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if(authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener);
     }
     private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+//        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+//        startActivityForResult(signInIntent, RC_SIGN_IN);
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
     }
 
     @Override
@@ -139,7 +140,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             handleSignInResult(result);
         }
         else{
-            Toast.makeText(getApplicationContext(), "Google Authentication", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Google Authentication Failed", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -93,13 +93,12 @@ public class User  implements Serializable {
 
     @Override
     public int hashCode(){
-        double result = 31 * email.hashCode()
-                    * 31 * name.hashCode()
-                    * 31 * price
-                    * 31 * (phone == null ? 17 : phone.hashCode());
+        double result = 31 * ((email == null) ? 17 : email.hashCode())
+                      * 31 * ((name == null) ? 17 : name.hashCode())
+                      * 31 * price
+                      * 31 * (phone.equals("") ? 17 : phone.hashCode());
         return (int) result;
     }
-
 
     @Override
     public boolean equals(Object obj){

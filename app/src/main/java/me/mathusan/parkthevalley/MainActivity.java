@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity
 
     private User user;
 
-    private Button button;
+//    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,13 +124,13 @@ public class MainActivity extends AppCompatActivity
 
         state = STATE.NORMAL;
         userListHashMap = new HashMap<>();
-        button = (Button) findViewById(R.id.refreshMapButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                writeNewPost(null);
-            }
-        });
+//        button = (Button) findViewById(R.id.refreshMapButton);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                writeNewPost(null);
+//            }
+//        });
 
         mGoogleAPIClient = new GoogleApiClient.Builder(getApplicationContext())
                 .addApi(LocationServices.API)
@@ -145,12 +145,13 @@ public class MainActivity extends AppCompatActivity
             name = b.getString("name");
             email = b.getString("email");
 
-            user = new User();
-            user.setName(name);
-            user.setEmail(email);
-            user.setPrice(2.5);
-            askForNumber();
         }
+
+        user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setPrice(2.5);
+        askForNumber();
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -169,11 +170,10 @@ public class MainActivity extends AppCompatActivity
         View nav_view = getLayoutInflater().inflate(R.layout.nav_header_main, null);
         nameH = (TextView) nav_view.findViewById(R.id.navheader_name);
         emailH = (TextView) nav_view.findViewById(R.id.navheader_email);
-        nameH.setText(user.getName());
+
+        nameH.setText(user.getName() == null ? "Please sign in" : user.getName());
         emailH.setText(user.getEmail());
         
-          mapFragment.getMapAsync(this);
-
         mapFragment.getMapAsync(this);
 
         // Write a message to the database
@@ -186,11 +186,11 @@ public class MainActivity extends AppCompatActivity
     public HashMap<User, String> getUserListHashMap () {return userListHashMap;}
 
     private void askForNumber() {
-        onCreateDialog();
+        createPhoneNumberDialogue();
     }
 
 
-    private void onCreateDialog() {
+    private void createPhoneNumberDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // Get the layout inflater
         LayoutInflater inflater = getLayoutInflater();
@@ -210,6 +210,43 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        user.setPhone("--- --- ----");
+                    }
+                });
+        builder.show();
+    }
+
+    private void createAddParkingDialogue() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = getLayoutInflater();
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        final View dialogueView = inflater.inflate(R.layout.add_parking_dialogue, null);
+        Button button = (Button) dialogueView.findViewById(R.id.dialgouePlacePicker);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startPlacePicker();
+            }
+        });
+
+        // Add action buttons
+        builder.setView(dialogueView).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                EditText number = (EditText) dialogueView.findViewById(R.id.price);
+
+                if(number != null && number.getText() != null){
+                    user.setPrice(Double.parseDouble(number.getText().toString()));
+                }
+
+
+            }
+        })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         user.setPhone("--- --- ----");
@@ -265,13 +302,6 @@ public class MainActivity extends AppCompatActivity
                 });
             }
         }
-
-
-
-
-
-
-
     }
 
     private void saveUserList(){
@@ -331,8 +361,8 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_addlisting) {
             state = STATE.ADDING;
+            createAddParkingDialogue();
 
-            startPlacePicker();
         } else if (id == R.id.nav_searchspots) {
             state = STATE.SEARCHING;
             startPlacePicker();
