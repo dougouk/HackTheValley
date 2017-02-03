@@ -345,14 +345,6 @@ public class MainActivity extends AppCompatActivity
             state = STATE.NORMAL;
             Intent i = new Intent(this, MyListings.class);
             startActivity(i);
-//            MyListings frag = new MyListings();
-//
-//            FragmentManager fm = getFragmentManager();
-//            FragmentTransaction ft = fm.beginTransaction();
-//            ft.replace(R.id.content_main,frag).addToBackStack("");
-//            ft.commit();
-
-//            manager.beginTransaction().replace(R.id.mylistings_fragment, frag, frag.getTag()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
