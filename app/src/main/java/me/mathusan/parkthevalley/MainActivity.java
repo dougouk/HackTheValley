@@ -282,14 +282,6 @@ public class MainActivity extends AppCompatActivity
           else if (id == R.id.nav_profile) {
             Intent i = new Intent(this, MyListings.class);
             startActivity(i);
-//            MyListings frag = new MyListings();
-//
-//            FragmentManager fm = getFragmentManager();
-//            FragmentTransaction ft = fm.beginTransaction();
-//            ft.replace(R.id.content_main,frag).addToBackStack("");
-//            ft.commit();
-
-//            manager.beginTransaction().replace(R.id.mylistings_fragment, frag, frag.getTag()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -414,21 +406,6 @@ public class MainActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
         Log.d(CLASS_NAME, "location Changed " + location.toString());
     }
-/*
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }*/
 
     private void askForPermission(){
         // if (ContextCompat.checkSelfPermission(this, Manifest.permission.))
