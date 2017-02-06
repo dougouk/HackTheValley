@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,13 +17,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +56,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -75,6 +80,7 @@ public class MainActivity extends AppCompatActivity
         NORMAL // nothing
     }
 
+    private String TAG = MainActivity.class.getName();
     /**
      * Class members
      */
@@ -85,6 +91,13 @@ public class MainActivity extends AppCompatActivity
 
     private String name, email;
     private HashMap<User, String> userListHashMap;
+
+    /**
+     * Dialogue stuff
+     */
+    private View addParkingDialogueView;
+    private ImageView parkingPreview;
+    private Spot spotToAdd;
 
     /**
      * Map Members
@@ -197,17 +210,19 @@ public class MainActivity extends AppCompatActivity
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        final View dialogueView = inflater.inflate(R.layout.dialogue_phone_number, null);
+        final View view = inflater.inflate(R.layout.dialogue_phone_number, null);
                 // Add action buttons
-                builder.setView(dialogueView).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                builder.setView(view).setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        EditText number = (EditText) dialogueView.findViewById(R.id.phoneNumberPicker);
+                        EditText number = (EditText) view.findViewById(R.id.phoneNumberPicker);
 
                         if(number != null && number.getText() != null){
                             user.setPhone(number.getText().toString());
                             Toast.makeText(getApplicationContext(), "Phone number saved", Toast.LENGTH_SHORT).show();
                         }
+
+
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -215,6 +230,7 @@ public class MainActivity extends AppCompatActivity
                         user.setPhone("--- --- ----");
                     }
                 });
+
         builder.show();
     }
 
@@ -225,8 +241,8 @@ public class MainActivity extends AppCompatActivity
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        final View dialogueView = inflater.inflate(R.layout.add_parking_dialogue, null);
-        Button button = (Button) dialogueView.findViewById(R.id.dialgouePlacePicker);
+        addParkingDialogueView = inflater.inflate(R.layout.add_parking_dialogue, null);
+        Button button = (Button) addParkingDialogueView.findViewById(R.id.dialgouePlacePicker);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -235,15 +251,31 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Add action buttons
-        builder.setView(dialogueView).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        builder.setView(addParkingDialogueView).setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                EditText number = (EditText) dialogueView.findViewById(R.id.price);
+                EditText number = (EditText) addParkingDialogueView.findViewById(R.id.price);
 
                 if(number != null && number.getText() != null){
                     user.setPrice(Double.parseDouble(number.getText().toString()));
                 }
 
+
+                changeCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(spotToAdd.getLat(), spotToAdd.getLng()), 14));
+
+                selectedMarker = mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(spotToAdd.getLat(), spotToAdd.getLng()))
+//                        .title((String) place.getAddress())
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
+
+//                    addMarkerToUser();
+
+                List<Spot> tempCollection = user.getSpots() == null ? new ArrayList<Spot>() : user.getSpots();
+                tempCollection.add(spotToAdd);
+                user.setSpots(tempCollection);
+
+                writeNewPost(user);
 
             }
         })
@@ -252,6 +284,7 @@ public class MainActivity extends AppCompatActivity
                         user.setPhone("--- --- ----");
                     }
                 });
+        parkingPreview = (ImageView) addParkingDialogueView.findViewById(R.id.spotImage);
         builder.show();
     }
 
@@ -400,29 +433,33 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, this);
-                String toastMsg = String.format("Place: %s", place.getName());
-                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+                final Place place = PlacePicker.getPlace(data, this);
 
-                changeCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 14));
+                // Measure screen dimensions
+                DisplayMetrics displaymetrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                final int height = displaymetrics.heightPixels;
+                final int width = displaymetrics.widthPixels;
+
+
                 if (state == STATE.ADDING) {
-                    Spot spot = new Spot();
-                    spot.setOpen(true);
-                    spot.setLat(place.getLatLng().latitude);
-                    spot.setLng(place.getLatLng().longitude);
 
-                    selectedMarker = mMap.addMarker(new MarkerOptions()
-                            .position(place.getLatLng())
-                            .title((String) place.getAddress())
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
+                    final String httpRequest = MapHelper.getStaticMapURL(place.getLatLng(), width, height);
+                    Log.d(TAG, httpRequest);
+                    //Load image onto dialogue
+                    parkingPreview.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            Picasso.with(getApplicationContext())
+                                    .load(httpRequest)
+                                    .into(parkingPreview);
+                        }
+                    });
 
-//                    addMarkerToUser();
-
-                    List<Spot> tempCollection = user.getSpots() == null ? new ArrayList<Spot>() : user.getSpots();
-                    tempCollection.add(spot);
-                    user.setSpots(tempCollection);
-
-                    writeNewPost(user);
+                    spotToAdd = new Spot();
+                    spotToAdd.setLat(place.getLatLng().latitude);
+                    spotToAdd.setLng(place.getLatLng().longitude);
+                    spotToAdd.setOpen(true);
                 }
             }
         }

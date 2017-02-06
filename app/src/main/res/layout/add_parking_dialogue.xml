@@ -14,8 +14,13 @@
         android:id="@+id/textView_instructions_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:layout_marginTop="15dp"
-        android:text="Price"/>
+        android:text="Price"
+        android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"
+        android:fontFamily="sans-serif"
+        android:textSize="18sp"
+        android:textAlignment="center" />
 
     <EditText
         android:layout_marginTop="10dp"
@@ -33,5 +38,11 @@
         android:layout_height="wrap_content"
         android:text="@string/chooseSpot"
         android:id="@+id/dialgouePlacePicker" />
+
+    <ImageView
+        android:layout_marginTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spotImage"/>
 
 </LinearLayout>
