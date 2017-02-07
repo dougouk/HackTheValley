@@ -64,7 +64,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
     }
 
 
-    public CardAdapter(Context mContext, List<Spot> spotList, String name, String phone, double price, User user, String key) {
+    public CardAdapter(Context mContext, List<Spot> spotList, String name, String phone, User user, String key) {
         this.mContext = mContext;
         this.spotList = spotList;
         this.name = name;
@@ -88,7 +88,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
         toggle.setChecked(spot.getOpen());
         holder.phone.setText(phone);
         holder.name.setText(name);
-        holder.money.setText(Double.toString(price));
+        holder.money.setText(Double.toString(spot.getPrice()));
         holder.title.setText(Double.toString(spot.getLat()) + ", " + Double.toString(spot.getLng()));
         toggle.setOnClickListener(new View.OnClickListener() {
             @Override
