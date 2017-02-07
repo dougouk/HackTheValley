@@ -1,39 +1,31 @@
 {
   "project_info": {
-    "project_number": "274134669153",
-    "firebase_url": "https://fir-parkthevalley.firebaseio.com",
-    "project_id": "firebase-parkthevalley",
-    "storage_bucket": "firebase-parkthevalley.appspot.com"
+    "project_number": "688003514168",
+    "firebase_url": "https://parkthevalley-155006.firebaseio.com",
+    "project_id": "parkthevalley-155006",
+    "storage_bucket": "parkthevalley-155006.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:274134669153:android:b36e6c4b37730829",
+        "mobilesdk_app_id": "1:688003514168:android:b36e6c4b37730829",
         "android_client_info": {
           "package_name": "me.mathusan.parkthevalley"
         }
       },
       "oauth_client": [
         {
-          "client_id": "274134669153-ojsp8tjko2246mi2jcel23kobkeg65rb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "me.mathusan.parkthevalley",
-            "certificate_hash": "4C88EFE2705B88E0D42C15624A8A9E0D53D2DB76"
-          }
-        },
-        {
-          "client_id": "274134669153-f12uidma6lsqclq0lqqtg0ti41gbmth2.apps.googleusercontent.com",
+          "client_id": "688003514168-m6np9vccm2v1bbrt2mqbmen4chsvvhtv.apps.googleusercontent.com",
           "client_type": 3
         },
         {
-          "client_id": "274134669153-l1ks3p2f0f9ht4lj76ah60uoruh968hg.apps.googleusercontent.com",
+          "client_id": "688003514168-jggps6isj7lenaa9oi9bgct6e1b255id.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBNvsXBjSnLvA5KWCiDMmsiVp5JcP362_Y"
+          "current_key": "AIzaSyDqDN2kNM3wdtbHEr9McfOL91MnY-1tA9s"
         }
       ],
       "services": {
@@ -44,7 +36,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "274134669153-f12uidma6lsqclq0lqqtg0ti41gbmth2.apps.googleusercontent.com",
+              "client_id": "688003514168-m6np9vccm2v1bbrt2mqbmen4chsvvhtv.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
