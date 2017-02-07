@@ -94,13 +94,16 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
             @Override
             public void onClick(View view) {
                 boolean bool = spotList.get(position).getOpen();
-                database.child(key);
+
                 User u = user;
                 Spot s = u.getSpots().get(position);
                 s.setOpen(!bool);
-                database.getRef().setValue(u);
+                database.child("availableSpots")
+                .child(u.getName())
+                .child("spots")
+                .setValue(spotList);
 
-                firebase.getRef().child("Open").setValue(!bool);
+//                firebase.getRef().child("Open").setValue(!bool);
 
 
             }
