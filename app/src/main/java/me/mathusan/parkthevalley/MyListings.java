@@ -43,25 +43,22 @@ public class MyListings extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
+        userList = new HashMap<>();
 
-
-
-            userList = new HashMap<>();
-
-            userList = readUserList();
+        userList = readUserList();
         String key;
 
-            User user = null;
-            for(User u : userList.keySet()){
-                if(u != null) spotList = u.getSpots();
-                user = u;
+        User user = null;
+        for(User u : userList.keySet()){
+            if(u != null) spotList = u.getSpots();
+            user = u;
 
-            }
+        }
         key = userList.get(user);
             Set<User> keySet = userList.keySet();
 
 
-    adapter = new CardAdapter(this, spotList, user.getName(), user.getPhone(), user.getPrice(), user, key);
+            adapter = new CardAdapter(this, spotList, user.getName(), user.getPhone(), user, key);
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

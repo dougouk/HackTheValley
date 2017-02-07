@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -61,9 +60,12 @@ import com.squareup.picasso.Picasso;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity
@@ -114,7 +116,7 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleAPIClient;
     private LocationRequest locationRequest;
 
-    private DatabaseReference database;
+    private DatabaseReference databaseReference;
     final public static String FIREBASE_URL = "https://fir-parkthevalley.firebaseio.com/";
 
     TextView nameH=null, emailH=null;
@@ -188,8 +190,8 @@ public class MainActivity extends AppCompatActivity
         
         mapFragment.getMapAsync(this);
 
-        // Write a message to the database
-        database = FirebaseDatabase.getInstance().getReference();
+        // Write a message to the databaseReference
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
     }
 
@@ -256,17 +258,17 @@ public class MainActivity extends AppCompatActivity
                 EditText number = (EditText) addParkingDialogueView.findViewById(R.id.price);
 
                 if(number != null && number.getText() != null){
-                    spotToAdd.setPrice(Double.parseDouble(number.getText().toString()));
+                    spotToAdd.setPrice(Float.parseFloat(number.getText().toString()));
                 }
 
 
                 changeCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(spotToAdd.getLat(), spotToAdd.getLng()), 14));
 
-                selectedMarker = mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(spotToAdd.getLat(), spotToAdd.getLng()))
-//                        .title((String) place.getAddress())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
+//                selectedMarker = mMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(spotToAdd.getLat(), spotToAdd.getLng()))
+////                        .title((String) place.getAddress())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
 
 //                    addMarkerToUser();
 
@@ -291,41 +293,83 @@ public class MainActivity extends AppCompatActivity
 
         Log.d(CLASS_NAME, "WritingPost...");
 
-        Firebase.setAndroidContext(this);
-
-        //Firebase firebase = new Firebase(FIREBASE_URL);
 
         // remove existing databasereference
         {
             if(userListHashMap.containsKey(user)){
-                database.child(userListHashMap.get(user));
-                database.getRef().setValue(user);
-                userListHashMap.remove(user);
+                databaseReference.child("availableSpots")
+                .child(user.getName())
+                .child("spots")
+                .setValue(user.getSpots());
 
-                Log.d(CLASS_NAME, "removed value");
+//                databaseReference.getRef().setValue(user);
+//                userListHashMap.remove(user);
+//
+                Log.d(CLASS_NAME, "userListHashMap contains user already");
             }
-            else {
+             {
                 // Generate a new push ID for the new post
 
-                final DatabaseReference newPostRef = database.push();
-                newPostRef.setValue(user);
-                userListHashMap.put(user, newPostRef.getKey());
+                databaseReference.child("availableSpots")
+                        .child(user.getName())
+                        .setValue(user);
+                userListHashMap.put(user, databaseReference.getKey());
 
-                newPostRef.addValueEventListener(new ValueEventListener() {
+                databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getValue() == null) return;
-                        User user = dataSnapshot.getValue(User.class);
-                        mMap.clear();
-                        for (Spot s : user.getSpots()) {
-                            selectedMarker = mMap.addMarker(new MarkerOptions()
-                                    .position(new LatLng(s.getLat(), s.getLng()))
-                                    .title("Price: " + String.valueOf(s.getPrice()))
-//                            .title("Available: " + s.getOpen())
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
+
+                        Log.d(TAG, dataSnapshot.toString());
+
+                        for (DataSnapshot list : dataSnapshot.getChildren()) {
+                            Log.d(TAG, list.toString());
+                            Map<String, Object> userMap = (Map<String, Object>) list.getValue();
+                            Set<String> keySet = userMap.keySet();
+
+                            Log.d(TAG, userMap.toString());
+                            for (String key : keySet) {
+                                Map<String, Object> childUserMap = (Map<String, Object>) userMap.get(key);
+                                Set<String> childKeySet = childUserMap.keySet();
+
+                                String phone = (String) childUserMap.get("phone");
+                                String email = (String) childUserMap.get("email");
+                                ArrayList<Map<String, Object>> spots = (ArrayList<Map<String, Object>>) childUserMap.get("spots");
+
+
+                                mMap.clear();
+                                for (Map<String, Object> spotMap : spots) {
+                                    Spot s = new Spot();
+//                                    Map<String, Object> latSet = (Map<String, Object> ) obj.get(0);
+//                                    Map<String, Object> lngSet = (Map<String, Object> ) spots.get(1);
+//                                    Map<String, Object> openSet = (Map<String, Object> ) spots.get(2);
+//                                    Map<String, Object> priceSet = (Map<String, Object> ) spots.get(2);
+//                                    Map<String, Object> timeSet = (Map<String, Object> ) spots.get(2);
+
+                                    s.setLat((double) spotMap.get("lat"));
+                                    s.setLng((double) spotMap.get("lng"));
+                                    s.setOpen((boolean) spotMap.get("open"));
+
+                                    // Firebase sometimes returns long for price. Not sure why
+                                    if(spotMap.get("price").getClass().equals(Long.class)){
+                                        s.setPrice(Double.parseDouble(spotMap.get("price")+""));
+                                    }
+                                    else{
+                                        s.setPrice((double)
+                                                spotMap.get("price"));
+                                    }
+
+                                    s.setTime((long) spotMap.get("time"));
+
+                                    selectedMarker = mMap.addMarker(new MarkerOptions()
+                                            .position(new LatLng(s.getLat(), s.getLng()))
+                                            .title("Price: " + String.valueOf(s.getPrice()))
+//                                            .title("Available: " + s.getOpen())
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
+
+                                    saveUserList();
+                                }
+                            }
                         }
-                        Log.d(CLASS_NAME, "user email is " + user.getEmail());
-                        saveUserList();
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
