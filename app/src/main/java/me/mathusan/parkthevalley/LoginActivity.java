@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
-    private static final String TAG = "SignInActivity";
+    private static final String TAG = LoginActivity.class.getName();
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
     private FirebaseAuth firebaseAuth;
@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         mStatusTextView = (TextView) findViewById(R.id.status);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.web_api_key))
+                .requestIdToken(getString(R.string.dan_web_api_key))
                 .requestEmail()
                 .build();
 
@@ -125,9 +125,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if(authStateListener != null) firebaseAuth.removeAuthStateListener(authStateListener);
     }
     private void signIn() {
-//        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-//        startActivityForResult(signInIntent, RC_SIGN_IN);
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+//        startActivity(new Intent(LoginActivity.this, MainActivity.class));
     }
 
     @Override

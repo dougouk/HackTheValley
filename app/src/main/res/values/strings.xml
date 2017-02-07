@@ -11,6 +11,7 @@
 
     <string name="AppName">Park The Valley</string>
     <string name="web_api_key">274134669153-f12uidma6lsqclq0lqqtg0ti41gbmth2.apps.googleusercontent.com</string>
+    <string name="dan_web_api_key">688003514168-r6aqqrmub711tt1ciokv6q89u8fs0j5j.apps.googleusercontent.com</string>
     <string name="chooseSpot">Select spot on map</string>
     <string name="dan_google_key">AIzaSyDoHwcLbUstQPligioNV2AJZNWr4xAYWSA</string>
 
