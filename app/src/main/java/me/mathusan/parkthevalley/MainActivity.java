@@ -163,7 +163,6 @@ public class MainActivity extends AppCompatActivity
         user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setPrice(2.5);
         askForNumber();
 
 
@@ -257,7 +256,7 @@ public class MainActivity extends AppCompatActivity
                 EditText number = (EditText) addParkingDialogueView.findViewById(R.id.price);
 
                 if(number != null && number.getText() != null){
-                    user.setPrice(Double.parseDouble(number.getText().toString()));
+                    spotToAdd.setPrice(Double.parseDouble(number.getText().toString()));
                 }
 
 
@@ -321,7 +320,7 @@ public class MainActivity extends AppCompatActivity
                         for (Spot s : user.getSpots()) {
                             selectedMarker = mMap.addMarker(new MarkerOptions()
                                     .position(new LatLng(s.getLat(), s.getLng()))
-                                    .title("Price: " + String.valueOf(user.getPrice()))
+                                    .title("Price: " + String.valueOf(s.getPrice()))
 //                            .title("Available: " + s.getOpen())
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
                         }

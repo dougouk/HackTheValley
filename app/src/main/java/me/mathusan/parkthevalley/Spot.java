@@ -15,6 +15,9 @@ public class Spot implements Serializable {
     double lng;
     boolean open;
     long time;
+    double price;
+
+
 
     public Spot() {
       /*Blank default constructor essential for Firebase*/
@@ -78,6 +81,14 @@ public class Spot implements Serializable {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
 

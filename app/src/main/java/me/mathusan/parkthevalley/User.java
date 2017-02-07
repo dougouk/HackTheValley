@@ -12,7 +12,7 @@ public class User  implements Serializable {
     private String email;
     private String name;
     private String phone;
-    private double price;
+
     private List<Spot> spots;
 //    private List<Marker> markers;
 
@@ -58,14 +58,6 @@ public class User  implements Serializable {
         this.phone = phone;
     }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
     public List<Spot> getSpots() {
         return spots;
     }
@@ -95,7 +87,6 @@ public class User  implements Serializable {
     public int hashCode(){
         double result = 31 * ((email == null) ? 17 : email.hashCode())
                       * 31 * ((name == null) ? 17 : name.hashCode())
-                      * 31 * price
                       * 31 * (phone.equals("") ? 17 : phone.hashCode());
         return (int) result;
     }
