@@ -9,16 +9,25 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -27,7 +36,7 @@ import java.util.Set;
 
 public class MyListings extends AppCompatActivity {
 
-    private static final String TAG = "Reading from FireBase";
+    private static final String TAG = MyListings.class.getName();
     private RecyclerView recyclerView;
     private CardAdapter adapter;
     private HashMap<User, String> userList;
@@ -49,28 +58,77 @@ public class MyListings extends AppCompatActivity {
         String key;
 
         User user = null;
-        for(User u : userList.keySet()){
-            if(u != null) spotList = u.getSpots();
+        spotList = new ArrayList<>();
+
+        // Retrieve list of spots
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("availableSpots");
+        for(final User u : userList.keySet()){
+
+            if(u != null) {
+                spotList = u.getSpots();
+
+//                databaseReference.child(u.getName()).child("spots").addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        Log.d(TAG, dataSnapshot.toString());
+//                        ArrayList<Map<String, Object>> listOfSpots = (ArrayList<Map<String, Object>>) dataSnapshot.getValue();
+//
+//                        for(Map<String, Object> set : listOfSpots){
+//                            Spot spot = new Spot();
+//
+//                            spot.setLat((double) set.get("lat"));
+//                            spot.setLng((double) set.get("lng"));
+//                            spot.setOpen((boolean) set.get("open"));
+//
+//                            // Firebase sometimes returns long for price. Not sure why
+//                            if(set.get("price").getClass().equals(Long.class)){
+//                                spot.setPrice(Double.parseDouble(set.get("price")+""));
+//                            }
+//                            else{
+//                                spot.setPrice((double)
+//                                        set.get("price"));
+//                            }
+//                            spot.setTime((long) set.get("time"));
+//
+//                            spotList.add(spot);
+//                            Log.d(TAG, "spot added");
+//                        }
+//                        initializeCardAdapter(u);
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+            }
             user = u;
 
         }
+        initializeCardAdapter(user);
+
+    }
+
+    private void initializeCardAdapter(User user) {
+        String key;
         key = userList.get(user);
-            Set<User> keySet = userList.keySet();
+        Set<User> keySet = userList.keySet();
 
 
-            adapter = new CardAdapter(this, spotList, user.getName(), user.getPhone(), user, key);
+        adapter = new CardAdapter(this, spotList, user.getName(), user.getPhone(), user, key);
 
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-            recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-            recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-            prepareCards();
-        }
+        prepareCards();
+    }
 
 
     private void prepareCards() {

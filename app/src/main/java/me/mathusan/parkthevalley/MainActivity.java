@@ -360,11 +360,14 @@ public class MainActivity extends AppCompatActivity
 
                                     s.setTime((long) spotMap.get("time"));
 
-                                    selectedMarker = mMap.addMarker(new MarkerOptions()
-                                            .position(new LatLng(s.getLat(), s.getLng()))
-                                            .title("Price: " + String.valueOf(s.getPrice()))
-//                                            .title("Available: " + s.getOpen())
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
+                                    // add marker ONLY if available
+                                    if(s.getOpen()){
+                                        selectedMarker = mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(s.getLat(), s.getLng()))
+                                                .title("Price: " + String.valueOf(s.getPrice()))
+    //                                            .title("Available: " + s.getOpen())
+                                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_xs)));
+                                    }
 
                                     saveUserList();
                                 }
