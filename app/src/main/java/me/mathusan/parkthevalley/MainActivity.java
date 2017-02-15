@@ -61,11 +61,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static android.provider.CalendarContract.CalendarCache.URI;
 
 
 public class MainActivity extends AppCompatActivity
@@ -119,13 +124,16 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference databaseReference;
     final public static String FIREBASE_URL = "https://fir-parkthevalley.firebaseio.com/";
 
-    TextView nameH=null, emailH=null;
+
 
     /**
      * User member
      */
 
     private User user;
+    private URL userPhotoUrl;
+    private TextView nameH=null, emailH=null;
+    private ImageView userImage;
 
 //    private Button button;
 
@@ -159,12 +167,18 @@ public class MainActivity extends AppCompatActivity
         if (b != null) {
             name = b.getString("name");
             email = b.getString("email");
+            try {
+                userPhotoUrl = new URL(b.getString("photoUrl"));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
 
         }
 
         user = new User();
         user.setName(name);
         user.setEmail(email);
+        user.setUserImageURL(userPhotoUrl.toString());
         askForNumber();
 
 
@@ -181,9 +195,22 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View nav_view = getLayoutInflater().inflate(R.layout.nav_header_main, null);
+//        View nav_view = getLayoutInflater().inflate(R.layout.nav_header_main, null);
+        View nav_view = navigationView.getHeaderView(0);
         nameH = (TextView) nav_view.findViewById(R.id.navheader_name);
         emailH = (TextView) nav_view.findViewById(R.id.navheader_email);
+        userImage = (ImageView) nav_view.findViewById(R.id.imageView);
+
+        //Load User profile image in nav header using Picasso
+        userImage.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                        Picasso.with(getApplicationContext())
+                                .load(user.getUserImageURL())
+                                .into(userImage);
+            }});
+
+
 
         nameH.setText(user.getName() == null ? "Please sign in" : user.getName());
         emailH.setText(user.getEmail());

@@ -157,6 +157,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             Bundle bundle = new Bundle();
             bundle.putString("email",result.getSignInAccount().getEmail());
             bundle.putString("name",result.getSignInAccount().getDisplayName());
+            bundle.putString("photoUrl",result.getSignInAccount().getPhotoUrl().toString());
             i.putExtras(bundle);startActivity(i);
             //updateUI(true);
         } else {

@@ -1,6 +1,7 @@
 package me.mathusan.parkthevalley;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -12,6 +13,10 @@ public class User  implements Serializable {
     private String email;
     private String name;
     private String phone;
+
+
+
+    private String userImageURL;
 
     private List<Spot> spots;
 //    private List<Marker> markers;
@@ -41,6 +46,14 @@ public class User  implements Serializable {
             return new User[size];
         }
     };*/
+
+    public String getUserImageURL() {
+        return userImageURL;
+    }
+
+    public void setUserImageURL(String userImageURL) {
+        this.userImageURL = userImageURL;
+    }
 
     public String getEmail() {
         return email;
