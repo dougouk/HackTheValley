@@ -10,26 +10,35 @@
         android:src="@drawable/dia"
         android:adjustViewBounds="true"/>
 
-    <TextView
-        android:id="@+id/textView_instructions_price"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/textView_instructions_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-        android:layout_marginTop="15dp"
-        android:text="Price"
-        android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"
-        android:fontFamily="sans-serif"
-        android:textSize="18sp"
-        android:textAlignment="center" />
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:text="Price"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"
+            android:fontFamily="sans-serif"
+            android:textSize="18sp"
+            android:textAlignment="center" />
 
-    <EditText
-        android:layout_marginTop="10dp"
+        <EditText
+            android:layout_marginTop="10dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/price"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:ems="10"
-        android:id="@+id/price" />
+
 
     <Button
         android:layout_marginTop="15dp"
